@@ -1,0 +1,116 @@
+<tool id="go_enrichment" name="GO Enrichment (clusterProfiler)" version="1.0.0" profile="22.01">
+    <description>GO Biological Process Enrichment with clusterProfiler</description>
+
+    <requirements>
+        <requirement type="package" version="4.10.0" >bioconductor-clusterprofiler</requirement>
+        <requirement type="package" version="3.18.0" >bioconductor-org.hs.eg.db</requirement>
+        <requirement type="package" version="1.22.0" >bioconductor-enrichplot</requirement>
+        <requirement type="package" version="3.5.1" >r-ggplot2</requirement>
+        <requirement type="package" version="2.2.2" >r-argparse</requirement>
+    </requirements>
+
+    <command detect_errors="exit_code">
+
+        Rscript '$__tool_directory__/go_enrichment.R'
+            --input '$input'
+            --output_table '$output_table'
+            --output_plot '$output_plot'
+            --pvalue_cutoff '$pvalue_cutoff'
+            --top_n '$top_n'
+            --height '$height'
+            --width '$width'
+
+            #if $advance_options.selected_option == 'advance'
+                --keytype '$advance_options.keytype'
+                --ont '$advance_options.ont'
+                --pAdjustMethod '$advance_options.pAdjustMethod'
+            #end if 
+
+    </command>
+    <inputs>
+
+        <param name="input" type="data" format="txt" label="Gene list (one gene per line)"/>
+        <param name="pvalue_cutoff" type="float" value="0.05" label="Adjusted p-value cutoff"/>
+        <param name="top_n" type="integer" value="20" label="Number of top terms to plot"/>
+        <param name="height" type="integer" value="1000" label="Plot height (pixels)"/>
+        <param name="width" type="integer" value="800" label="Plot width (pixels)"/>
+
+         <conditional name='advance_options' >
+            <param name="selected_option" type="select" label="Descriptor type" argument="">
+                <option value="default">Default Settings</option>
+                <option value="advance">Advance Settings</option>
+            </param>
+
+            <when value="default">          
+            </when>
+
+            <when value="advance">          
+                <param name="keytype" type="text" value="SYMBOL" label="KeyType parameter (e.g. SYMBOL, ENTREZID)"/>
+                <param name="ont" type="text" value="BP" label="Ontology (BP, MF, CC)"/>
+                <param name="pAdjustMethod" type="text" value="BH" label="pAdjustMethod (BH, BY, etc)"/>
+            </when>
+         </conditional>
+    </inputs>
+
+    <outputs>
+        <data name="output_table" format="csv" label="Enrichment Result Table"/>
+        <data name="output_plot" format="png" label="Dotplot Visualization"/>
+    </outputs>
+
+    <tests>
+        <test>
+            <param name="input" value="test.txt"/>
+            <param name="pvalue_cutoff" value="0.05"/>
+            <param name="top_n" value="20"/>
+            <param name="height" value="1000"/>
+            <param name="width" value="800"/>
+            <output name="output_table" ftype="csv" file="out.csv" />
+        </test>
+    </tests>
+
+  
+    <help><![CDATA[
+**What this tool does**
+
+This tool performs GO Biological Process enrichment analysis using Bioconductor's `clusterProfiler`.
+
+**Inputs**
+- Gene list (one gene per line)
+- Plotting options: image format, dimensions, top N categories
+- GO enrichment parameters: keytype, ontology type, p-value adjustment method
+
+**Outputs**
+- Enrichment result table (CSV)
+- Dotplot visualization (image)
+
+**Dependencies**
+- clusterProfiler
+- org.Hs.eg.db
+- enrichplot
+- ggplot2
+- argparse
+
+**Example Usage**
+
+Upload a gene list as a plain text file (one gene per line) and run this tool to obtain enrichment results and a dotplot figure.
+
+    ]]>
+    </help>
+
+    <citations>
+
+      <citation type="bibtex">
+    @Article{clusterProfiler2012,
+      title={clusterProfiler: an R package for comparing biological themes among gene clusters},
+      author={Guangchuang Yu and Li-Gen Wang and Yanyan Han and Qing-Yu He},
+      journal={OMICS: A Journal of Integrative Biology},
+      volume={16},
+      number={5},
+      pages={284--287},
+      year={2012},
+      publisher={Mary Ann Liebert, Inc.},
+      doi={10.1089/omi.2011.0118}
+    }
+  </citation>
+  </citations>
+</tool>
