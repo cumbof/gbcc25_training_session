@@ -1,1 +1,1 @@
-# gbcc205_training_session
+# GBCC 2025: Training Session
